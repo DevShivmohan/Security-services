@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 @ControllerAdvice
@@ -22,5 +23,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<?> handlerIOException(IOException ioException){
         log.error(ioException.getMessage());
         return ResponseEntity.status(HttpStatus.INSUFFICIENT_STORAGE).body(ioException.getMessage());
+    }
+
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<?> handlerIOException(FileNotFoundException fileNotFoundException){
+        log.error(fileNotFoundException.getMessage());
+        return ResponseEntity.status(HttpStatus.INSUFFICIENT_STORAGE).body(fileNotFoundException.getMessage());
     }
 }

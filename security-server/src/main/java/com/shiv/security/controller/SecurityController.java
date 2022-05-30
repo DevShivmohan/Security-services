@@ -3,6 +3,7 @@ package com.shiv.security.controller;
 import com.shiv.security.dto.CryptoRequestDTO;
 import com.shiv.security.dto.CryptoSecretKeyDTO;
 import com.shiv.security.exception.GenericException;
+import com.shiv.security.service.FileTransferService;
 import com.shiv.security.service.SecureService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ import java.io.IOException;
 public class SecurityController {
     @Autowired
     private SecureService secureService;
+
+    @Autowired
+    private FileTransferService fileTransferService;
 
     @PostMapping("/encrypt/raw/data")
     public ResponseEntity<?> encryptRawData(@RequestBody CryptoRequestDTO cryptoRequestDTO) throws GenericException {
@@ -42,5 +46,17 @@ public class SecurityController {
     public ResponseEntity<?> decryptFileData(CryptoSecretKeyDTO cryptoSecretKeyDTO,@RequestPart(value = "file") MultipartFile multipartFile) throws GenericException, IOException {
         log.info("/decrypt/file/data api hits");
         return secureService.decryptFileData(cryptoSecretKeyDTO.getSecretKey(),multipartFile);
+    }
+
+    @PostMapping(value = "/send/file/data",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> sendFileData(@RequestPart(value = "file") MultipartFile multipartFile) throws GenericException, IOException {
+        log.info("/send/file/data api hits");
+        return fileTransferService.sendFile(multipartFile);
+    }
+
+    @PostMapping(value = "/receive/file/data")
+    public ResponseEntity<?> receiveFileData(@RequestBody CryptoSecretKeyDTO cryptoSecretKeyDTO) throws GenericException, IOException {
+        log.info("/receive/file/data api hits");
+        return fileTransferService.receiveFile(cryptoSecretKeyDTO);
     }
 }
