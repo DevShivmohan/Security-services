@@ -26,6 +26,8 @@ public class SecureServiceImpl implements SecureService {
     @Override
     public ResponseEntity<?> encryptRawData(CryptoRequestDTO cryptoRequestDTO) throws GenericException {
         log.info(cryptoRequestDTO.toString());
+        if(cryptoRequestDTO.getSecretKey()==null || cryptoRequestDTO.getData()==null)
+            throw new GenericException(HttpStatus.NO_CONTENT.value(),"Payload cannot be null");
         if(cryptoRequestDTO.getSecretKey().isBlank() || cryptoRequestDTO.getData().isBlank())
             throw new GenericException(HttpStatus.BAD_REQUEST.value(),"Payload cannot be blank");
         String encryptData= cryptoService.encryptRawData(cryptoRequestDTO.getData(),cryptoRequestDTO.getSecretKey());
@@ -34,6 +36,8 @@ public class SecureServiceImpl implements SecureService {
 
     @Override
     public ResponseEntity<?> decryptRawData(CryptoRequestDTO cryptoRequestDTO) throws GenericException {
+        if(cryptoRequestDTO.getSecretKey()==null || cryptoRequestDTO.getData()==null)
+            throw new GenericException(HttpStatus.NO_CONTENT.value(),"Payload cannot be null");
         if(cryptoRequestDTO.getSecretKey().isBlank() || cryptoRequestDTO.getData().isBlank())
             throw new GenericException(HttpStatus.BAD_REQUEST.value(),"Payload cannot be blank");
         String decryptedData=cryptoService.decryptRawData(cryptoRequestDTO.getData(), cryptoRequestDTO.getSecretKey());
@@ -43,8 +47,8 @@ public class SecureServiceImpl implements SecureService {
     @Override
     public ResponseEntity<?> decryptFileData(String secretKey, MultipartFile multipartFile) throws GenericException, IOException {
         log.info("File size-"+multipartFile.getSize());
-        if(secretKey.isBlank())
-            throw new GenericException(HttpStatus.BAD_REQUEST.value(),"Payload cannot be blank");
+        if(secretKey==null || secretKey.isBlank())
+            throw new GenericException(HttpStatus.BAD_REQUEST.value(),"Payload cannot be null or blank");
         if(multipartFile==null || multipartFile.isEmpty() || multipartFile.getSize()<=0)
             throw new GenericException(HttpStatus.BAD_REQUEST.value(), "File size empty");
         if(multipartFile.getSize()>15*1024*1024)
@@ -60,8 +64,8 @@ public class SecureServiceImpl implements SecureService {
     @Override
     public ResponseEntity<?> encryptFileData(String secretKey,MultipartFile multipartFile) throws GenericException, IOException {
             log.info("File size-"+multipartFile.getSize());
-            if(secretKey.isBlank())
-                throw new GenericException(HttpStatus.BAD_REQUEST.value(),"Payload cannot be blank");
+            if(secretKey==null || secretKey.isBlank())
+                throw new GenericException(HttpStatus.BAD_REQUEST.value(),"Payload cannot be null or blank");
             if(multipartFile==null || multipartFile.isEmpty() || multipartFile.getSize()<=0)
                 throw new GenericException(HttpStatus.BAD_REQUEST.value(), "File size empty");
             if(multipartFile.getSize()>15*1024*1024)
