@@ -1,10 +1,12 @@
 package com.shiv.security.controller;
 
 import com.shiv.security.dto.CryptoRequestDTO;
+import com.shiv.security.dto.CryptoSecretKeyDTO;
 import com.shiv.security.exception.GenericException;
 import com.shiv.security.service.SecureService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,9 +17,6 @@ import java.io.IOException;
 @RequestMapping("/security")
 @Slf4j
 public class SecurityController {
-
-    private String secretKey="dhgfdfsfsdf3348^^%#@#^^*@(fjdhfjdfjdfsdfdsfsdfshdgjhrteuyeiyjfhdkjfhsdjfhtyieurydjfhs";
-
     @Autowired
     private SecureService secureService;
 
@@ -33,15 +32,15 @@ public class SecurityController {
         return secureService.decryptRawData(cryptoRequestDTO);
     }
 
-    @PostMapping(value = "/encrypt/file/data")
-    public ResponseEntity<?> encryptFileData(@RequestPart("file") MultipartFile multipartFile) throws GenericException, IOException {
+    @PostMapping(value = "/encrypt/file/data",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> encryptFileData(CryptoSecretKeyDTO cryptoSecretKeyDTO, @RequestParam(value = "file") MultipartFile multipartFile) throws GenericException, IOException {
         log.info("/encrypt/file/data api hits");
-        return secureService.encryptFileData(secretKey,multipartFile);
+        return secureService.encryptFileData(cryptoSecretKeyDTO.getSecretKey(),multipartFile);
     }
 
-    @PostMapping(value = "/decrypt/file/data")
-    public ResponseEntity<?> decryptFileData(@RequestPart(value = "file") MultipartFile multipartFile) throws GenericException, IOException {
+    @PostMapping(value = "/decrypt/file/data",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> decryptFileData(CryptoSecretKeyDTO cryptoSecretKeyDTO,@RequestPart(value = "file") MultipartFile multipartFile) throws GenericException, IOException {
         log.info("/decrypt/file/data api hits");
-        return secureService.decryptFileData(secretKey,multipartFile);
+        return secureService.decryptFileData(cryptoSecretKeyDTO.getSecretKey(),multipartFile);
     }
 }
