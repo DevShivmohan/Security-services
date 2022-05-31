@@ -59,4 +59,5 @@ public class SecurityController {
         log.info("/receive/file/data api hits");
         return fileTransferService.receiveFile(cryptoSecretKeyDTO);
     }
+
 }
