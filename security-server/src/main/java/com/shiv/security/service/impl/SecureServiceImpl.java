@@ -68,7 +68,8 @@ public class SecureServiceImpl implements SecureService {
                 throw new GenericException(HttpStatus.BAD_REQUEST.value(),"Payload cannot be null or blank");
             if(multipartFile==null || multipartFile.isEmpty() || multipartFile.getSize()<=0)
                 throw new GenericException(HttpStatus.BAD_REQUEST.value(), "File size empty");
-            if(multipartFile.getSize()>15*1024*1024)
+            long totalMemory=Runtime.getRuntime().totalMemory();
+            if(multipartFile.getSize()>totalMemory*1024*1024)
                 throw new GenericException(HttpStatus.PAYLOAD_TOO_LARGE.value(),"File payload too large");
             InputStream inputStream= multipartFile.getInputStream();
             ByteArrayResource byteArrayResource=new ByteArrayResource(cryptoService.encryptFileData(inputStream.readAllBytes(), secretKey));
