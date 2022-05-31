@@ -8,7 +8,7 @@ import java.io.File;
 public class ApiConstant {
     public static final String SERVER_DOWNLOAD_DIR=System.getProperty("user.dir")+File.separator+"server"+File.separator+"download";
     static {
-        new File(SERVER_DOWNLOAD_DIR).mkdirs();
-        log.info("Server directory created");
+        if(new File(SERVER_DOWNLOAD_DIR).mkdirs())
+            log.info("Server directory created");
     }
 }
