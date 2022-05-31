@@ -28,7 +28,7 @@ public class FileTransferServiceImpl implements FileTransferService {
         if(multipartFile==null || multipartFile.isEmpty() || multipartFile.getSize()<=0)
             throw new GenericException(HttpStatus.BAD_REQUEST.value(), "File size empty");
         long totalMemory=Runtime.getRuntime().totalMemory();
-        if(multipartFile.getSize()>totalMemory*1024*1024)
+        if(multipartFile.getSize()>totalMemory)
             throw new GenericException(HttpStatus.PAYLOAD_TOO_LARGE.value(),"File payload too large");
         String uuid=UUID.randomUUID().toString();
         InputStream inputStream=multipartFile.getInputStream();
