@@ -1,5 +1,8 @@
 package com.shiv.security.controller;
 
+//import com.shiv.security.annotation.CheckIfFileSizeExceeded;
+import com.shiv.security.annotation.CheckIfFileSizeExceeded;
+import com.shiv.security.annotation.CheckIfValidKey;
 import com.shiv.security.dto.CryptoRequestDTO;
 import com.shiv.security.dto.CryptoSecretKeyDTO;
 import com.shiv.security.exception.GenericException;
@@ -48,12 +51,14 @@ public class SecurityController {
         return secureService.decryptFileData(cryptoSecretKeyDTO.getSecretKey(),multipartFile);
     }
 
+    @CheckIfFileSizeExceeded
     @PostMapping(value = "/send/file/data",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> sendFileData(@RequestPart(value = "file") MultipartFile multipartFile) throws GenericException, IOException {
         log.info("/send/file/data api hits");
         return fileTransferService.sendFile(multipartFile);
     }
 
+    @CheckIfValidKey
     @PostMapping(value = "/receive/file/data")
     public ResponseEntity<?> receiveFileData(@RequestBody CryptoSecretKeyDTO cryptoSecretKeyDTO) throws GenericException, IOException {
         log.info("/receive/file/data api hits");

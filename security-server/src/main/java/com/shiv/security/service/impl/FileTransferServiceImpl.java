@@ -25,11 +25,6 @@ public class FileTransferServiceImpl implements FileTransferService {
 
     @Override
     public ResponseEntity<?> sendFile(MultipartFile multipartFile) throws GenericException, IOException {
-        if(multipartFile==null || multipartFile.isEmpty() || multipartFile.getSize()<=0)
-            throw new GenericException(HttpStatus.BAD_REQUEST.value(), "File size empty");
-        long totalMemory=Runtime.getRuntime().totalMemory();
-        if(multipartFile.getSize()>totalMemory)
-            throw new GenericException(HttpStatus.PAYLOAD_TOO_LARGE.value(),"File payload too large");
         String uuid=UUID.randomUUID().toString();
         InputStream inputStream=multipartFile.getInputStream();
         FileOutputStream fileOutputStream=new FileOutputStream(ApiConstant.SERVER_DOWNLOAD_DIR+File.separator+uuid+multipartFile.getOriginalFilename());
@@ -42,12 +37,10 @@ public class FileTransferServiceImpl implements FileTransferService {
 
     @Override
     public ResponseEntity<?> receiveFile(CryptoSecretKeyDTO cryptoSecretKeyDTO) throws GenericException, IOException {
-        if(cryptoSecretKeyDTO.getSecretKey()==null || cryptoSecretKeyDTO.getSecretKey().isBlank())
-            throw new GenericException(HttpStatus.BAD_REQUEST.value(), "Secret key cannot be null or blank");
         File[] files=new File(ApiConstant.SERVER_DOWNLOAD_DIR).listFiles();
         if(files!=null)
             for(File file:files)
-                if(file.getName().contains(cryptoSecretKeyDTO.getSecretKey())){
+                if(cryptoSecretKeyDTO.getSecretKey().equals(file.getName().substring(0,36))){
                     FileInputStream fileInputStream=new FileInputStream(file);
                     ByteArrayResource byteArrayResource=new ByteArrayResource(cryptoService.decryptFileData(fileInputStream.readAllBytes(), cryptoSecretKeyDTO.getSecretKey()));
                     fileInputStream.close();
@@ -56,6 +49,6 @@ public class FileTransferServiceImpl implements FileTransferService {
                     httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename="+file.getName().replace(cryptoSecretKeyDTO.getSecretKey(), ""));
                     return ResponseEntity.status(HttpStatus.OK).headers(httpHeaders).contentLength(byteArrayResource.contentLength()).contentType(MediaType.APPLICATION_OCTET_STREAM).body(byteArrayResource);
                 }
-        throw new GenericException(HttpStatus.NOT_FOUND.value(), "File not found of given key");
+        throw new GenericException(HttpStatus.NOT_FOUND.value(), "Incorrect given key");
     }
 }
