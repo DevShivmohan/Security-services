@@ -1,5 +1,6 @@
 package com.shiv.security.filter;
 
+import com.shiv.security.IPAddressHold;
 import com.shiv.security.dto.IPAddressBlocker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("Remote IP address-"+request.getRemoteAddr());
         log.info("Blocked Remote IP addresses-"+blockedIpAddresses);
+        IPAddressHold.getInstance().setIpAddress(request.getRemoteAddr());
         if(blockedIpAddresses.contains(request.getRemoteAddr())) {
             response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE,"Your are blocked");
             return;

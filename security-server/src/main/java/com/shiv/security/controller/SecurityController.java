@@ -1,6 +1,5 @@
 package com.shiv.security.controller;
 
-//import com.shiv.security.annotation.CheckIfFileSizeExceeded;
 import com.shiv.security.annotation.CheckIfFileSizeExceeded;
 import com.shiv.security.annotation.CheckIfValidKey;
 import com.shiv.security.dto.CryptoRequestDTO;
@@ -65,4 +64,9 @@ public class SecurityController {
         return fileTransferService.receiveFile(cryptoSecretKeyDTO);
     }
 
+    @GetMapping(value = "/sent/files")
+    public ResponseEntity<?> receiveFileData() throws GenericException, IOException {
+        log.info("/sent/files api hits");
+        return fileTransferService.getSentFileKeys();
+    }
 }

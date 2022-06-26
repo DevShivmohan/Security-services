@@ -10,4 +10,5 @@ import java.io.IOException;
 public interface FileTransferService {
     ResponseEntity<?> sendFile(MultipartFile multipartFile) throws GenericException, IOException;
     ResponseEntity<?> receiveFile(CryptoSecretKeyDTO cryptoSecretKeyDTO) throws GenericException, IOException;
+    ResponseEntity<?> getSentFileKeys() throws IOException, GenericException;
 }
