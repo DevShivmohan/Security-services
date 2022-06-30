@@ -1,0 +1,12 @@
+server:
+  port: 8000
+
+# eureka configuration not register microservices by default false
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+  server:
+    waitTimeInMsWhenSyncEmpty: 0
+  instance:
+    hostname: 192.168.78.62
