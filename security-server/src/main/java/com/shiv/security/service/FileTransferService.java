@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 public interface FileTransferService {
-    ResponseEntity<?> sendFile(MultipartFile multipartFile) throws GenericException, IOException;
+    ResponseEntity<?> sendFile(MultipartFile multipartFile, final String ipAddress) throws GenericException, IOException;
     ResponseEntity<?> receiveFile(CryptoSecretKeyDTO cryptoSecretKeyDTO) throws GenericException, IOException;
-    ResponseEntity<?> getSentFileKeys() throws IOException, GenericException;
+    ResponseEntity<?> getSentFileKeys(final String ipAddress) throws IOException, GenericException;
 }

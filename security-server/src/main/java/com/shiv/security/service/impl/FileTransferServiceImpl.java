@@ -1,12 +1,12 @@
 package com.shiv.security.service.impl;
 
-import com.shiv.security.IPAddressHold;
 import com.shiv.security.constant.ApiConstant;
 import com.shiv.security.dto.CryptoSecretKeyDTO;
 import com.shiv.security.dto.SentDataDTO;
 import com.shiv.security.exception.GenericException;
 import com.shiv.security.service.CryptoService;
 import com.shiv.security.service.FileTransferService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -17,25 +17,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.attribute.BasicFileAttributeView;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class FileTransferServiceImpl implements FileTransferService {
+
+    private File file;
 
     @Autowired
     private CryptoService cryptoService;
 
     @Override
-    public ResponseEntity<?> sendFile(MultipartFile multipartFile) throws GenericException, IOException {
+    public ResponseEntity<?> sendFile(MultipartFile multipartFile,final String ipAddress) throws GenericException, IOException {
         String uuid=UUID.randomUUID().toString();
         InputStream inputStream=multipartFile.getInputStream();
-        File file=new File(ApiConstant.SERVER_DOWNLOAD_DIR+File.separator+ IPAddressHold.getInstance().getIpAddress().replace(":",""));
+        File file=new File(ApiConstant.SERVER_DOWNLOAD_DIR+File.separator+ ipAddress.replace(":",""));
         file.mkdirs();
         FileOutputStream fileOutputStream=new FileOutputStream(file.getAbsolutePath()+File.separator+uuid+multipartFile.getOriginalFilename());
         fileOutputStream.write(cryptoService.encryptFileData(inputStream.readAllBytes(),uuid));
@@ -48,8 +47,9 @@ public class FileTransferServiceImpl implements FileTransferService {
     @Override
     public ResponseEntity<?> receiveFile(CryptoSecretKeyDTO cryptoSecretKeyDTO) throws GenericException, IOException {
         File rootPath=new File(ApiConstant.SERVER_DOWNLOAD_DIR);
-        rootPath=searchFileViaSecretKey(rootPath,cryptoSecretKeyDTO);
-        if(rootPath==null)
+        searchFileViaSecretKey(rootPath,cryptoSecretKeyDTO);
+        rootPath=file;
+        if(file==null)
             throw new GenericException(HttpStatus.NOT_FOUND.value(), "Incorrect given key");
         FileInputStream fileInputStream=new FileInputStream(rootPath);
         ByteArrayResource byteArrayResource=new ByteArrayResource(cryptoService.decryptFileData(fileInputStream.readAllBytes(), cryptoSecretKeyDTO.getSecretKey()));
@@ -61,9 +61,9 @@ public class FileTransferServiceImpl implements FileTransferService {
     }
 
     @Override
-    public ResponseEntity<?> getSentFileKeys() throws IOException, GenericException {
+    public ResponseEntity<?> getSentFileKeys(final String ipAddress) throws IOException, GenericException {
         File rootPath=new File(ApiConstant.SERVER_DOWNLOAD_DIR);
-        List<SentDataDTO> sentDataDTOS=getListFilesViaIPAddress(rootPath);
+        List<SentDataDTO> sentDataDTOS=getListFilesViaIPAddress(rootPath,ipAddress);
         if(sentDataDTOS==null || sentDataDTOS.size()==0)
             throw new GenericException(HttpStatus.NOT_FOUND.value(), "No any sent files found via your device");
         return ResponseEntity.status(HttpStatus.OK).body(sentDataDTOS);
@@ -75,16 +75,17 @@ public class FileTransferServiceImpl implements FileTransferService {
      * @param cryptoSecretKeyDTO
      * @return
      */
-    private File searchFileViaSecretKey(File rootPath,CryptoSecretKeyDTO cryptoSecretKeyDTO){
+    private void searchFileViaSecretKey(File rootPath,CryptoSecretKeyDTO cryptoSecretKeyDTO){
         File[] files=rootPath.listFiles();
         if(files!=null)
-            for(File file:files)
-                if(file.isDirectory())
-                    searchFileViaSecretKey(file,cryptoSecretKeyDTO);
-                else
-                    if(cryptoSecretKeyDTO.getSecretKey().equals(file.getName().substring(0,36)))
-                        return file;
-        return null;
+            Arrays.stream(files).forEach((file)->{
+                if(file!=null)
+                    if(file.isDirectory())
+                        searchFileViaSecretKey(file,cryptoSecretKeyDTO);
+                    else
+                        if(cryptoSecretKeyDTO.getSecretKey().equals(file.getName().substring(0,36)))
+                            this.file=file;
+            });
     }
 
     /**
@@ -93,22 +94,18 @@ public class FileTransferServiceImpl implements FileTransferService {
      * @return
      * @throws IOException
      */
-    private List<SentDataDTO> getListFilesViaIPAddress(File rootPath) throws IOException {
-        File[] files=rootPath.listFiles();
-        if(files!=null)
-            for(File file:files)
-                if(file.isDirectory() && file.getName().equals(IPAddressHold.getInstance().getIpAddress().replace(":",""))){
-                    List<SentDataDTO> sentDataDTOS=new ArrayList<>();
-                    files=file.listFiles();
-                    if(files!=null)
-                        for(File file1:files){
-                            BasicFileAttributes basicFileAttributes= Files.getFileAttributeView(file1.toPath(), BasicFileAttributeView.class)
-                                    .readAttributes();
-                            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                            sentDataDTOS.add(new SentDataDTO(file1.getName().substring(36),file1.getName().substring(0,36), simpleDateFormat.format(basicFileAttributes.lastModifiedTime().toMillis())));
-                        }
-                    return sentDataDTOS;
-                }
-        return null;
+    private List<SentDataDTO> getListFilesViaIPAddress(File rootPath,String ipAddress) throws IOException {
+        File[] files = rootPath.listFiles();
+        List<SentDataDTO> sentDataDTOS=new LinkedList<>();
+        if (files != null){
+            List<File> ipDirectoryList= Arrays.stream(files).filter((file) -> file.isDirectory() && file.getName().equals(ipAddress.replace(":", ""))).collect(Collectors.toList());
+            ipDirectoryList.forEach((file1 -> {
+                SimpleDateFormat simpleDateFormat=new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                if(file1!=null)
+                    Arrays.stream(file1.listFiles()).forEach((file2 ->
+                            sentDataDTOS.add(new SentDataDTO(file2.getName().substring(36),file2.getName().substring(0,36), simpleDateFormat.format(file2.lastModified())))));
+            }));
+        }
+        return sentDataDTOS;
     }
 }

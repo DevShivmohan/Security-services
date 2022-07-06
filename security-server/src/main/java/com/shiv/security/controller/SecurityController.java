@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RestController
@@ -52,9 +53,9 @@ public class SecurityController {
 
     @CheckIfFileSizeExceeded
     @PostMapping(value = "/send/file/data",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> sendFileData(@RequestPart(value = "file") MultipartFile multipartFile) throws GenericException, IOException {
+    public ResponseEntity<?> sendFileData(@RequestPart(value = "file") MultipartFile multipartFile, HttpServletRequest httpServletRequest) throws GenericException, IOException {
         log.info("/send/file/data api hits");
-        return fileTransferService.sendFile(multipartFile);
+        return fileTransferService.sendFile(multipartFile,httpServletRequest.getRemoteAddr());
     }
 
     @CheckIfValidKey
@@ -65,8 +66,8 @@ public class SecurityController {
     }
 
     @GetMapping(value = "/sent/files")
-    public ResponseEntity<?> receiveFileData() throws GenericException, IOException {
+    public ResponseEntity<?> receiveFileData(HttpServletRequest httpServletRequest) throws GenericException, IOException {
         log.info("/sent/files api hits");
-        return fileTransferService.getSentFileKeys();
+        return fileTransferService.getSentFileKeys(httpServletRequest.getRemoteAddr());
     }
 }
