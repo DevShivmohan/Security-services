@@ -18,7 +18,7 @@ import java.util.Map;
 @Slf4j
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
-    private int maxHits=40;
+    private int maxHits=20;
     private long duringTimeIntervalInMS=5*1000;
     private Map<String,IPAddressBlocker> ipAddressBlockerMap=new HashMap<>();
     private List<String> blockedIpAddresses=new ArrayList<>();
