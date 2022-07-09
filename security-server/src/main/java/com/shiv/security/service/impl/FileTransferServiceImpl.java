@@ -57,6 +57,8 @@ public class FileTransferServiceImpl implements FileTransferService {
         HttpHeaders httpHeaders=new HttpHeaders();
         httpHeaders.add("status","File is ready to download you can able to download");
         httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename="+rootPath.getName().replace(cryptoSecretKeyDTO.getSecretKey(), ""));
+        file.delete();
+        this.file=null;
         return ResponseEntity.status(HttpStatus.OK).headers(httpHeaders).contentLength(byteArrayResource.contentLength()).contentType(MediaType.APPLICATION_OCTET_STREAM).body(byteArrayResource);
     }
 
