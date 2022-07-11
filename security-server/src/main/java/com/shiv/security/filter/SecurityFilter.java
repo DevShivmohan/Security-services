@@ -24,7 +24,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     private List<String> blockedIpAddresses=new ArrayList<>();
 
     /**
-     * Handle DoS attacks block ip address if hits 40 request within 5 seconds
+     * Handle DoS attacks block ip address if hits 20 request within 5 seconds
      * @param request
      * @param response
      * @param filterChain

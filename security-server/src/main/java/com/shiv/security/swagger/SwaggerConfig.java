@@ -40,8 +40,8 @@ public class SwaggerConfig {
 
     private ApiInfo metadata() {
         return new ApiInfoBuilder()
-                .title("Data security")
-                .description("Encryption and decryption of data")
+                .title("Transfer and receive files and data security")
+                .description("Encryption/decryption of data and transfer and receive files")
                 .version("1.0")
                 .build();
     }
