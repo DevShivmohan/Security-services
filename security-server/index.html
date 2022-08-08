@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Call Rest api</title>
+    <script>
+		function UserAction() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+		console.log("Data-"+this.responseText);
+         if (this.readyState == 4 && this.status == 200) {
+             alert(this.responseText);
+         }
+    };
+    xhttp.open("GET", "http://localhost:8090/trf/security/sent/files", true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send();
+}
+
+function myFunction(){
+	var count=0;
+	for(count=0;count<=1;count++){
+	UserAction();
+	count++;
+	}
+}
+	</script>
+</head>
+<body>
+<button type="submit" onclick="myFunction()">Call api</button>
+</body>
+</html>
