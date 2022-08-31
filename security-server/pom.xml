@@ -15,7 +15,6 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
-		<target.dir>target</target.dir>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -77,8 +76,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<outputDirectory>${basedir}/${target.dir}/classes</outputDirectory>
-		<testOutputDirectory>${basedir}/${target.dir}/test-classes</testOutputDirectory>
 	</build>
 
 </project>
