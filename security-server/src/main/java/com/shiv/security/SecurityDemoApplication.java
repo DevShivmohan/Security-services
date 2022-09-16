@@ -1,15 +1,17 @@
 package com.shiv.security;
 
 import com.shiv.security.constant.ApiConstant;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
+@Slf4j
 @SpringBootApplication
 public class SecurityDemoApplication {
 
@@ -25,7 +27,8 @@ public class SecurityDemoApplication {
 			while (true){
 				try {
 					deleteFiles(rootFile);
-					TimeUnit.HOURS.sleep(3);
+					deleteFilesUnReceived(rootFile);
+					TimeUnit.HOURS.sleep(6);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -42,6 +45,18 @@ public class SecurityDemoApplication {
 			if(file!=null && file.isDirectory())
 				Arrays.stream(file.listFiles()).filter(file1 -> file1.isFile() && file1.getName().length()<=36)
 						.collect(Collectors.toList()).forEach(file2 -> file2.delete());
+		});
+	}
+
+	/**
+	 * delete all files which are unreceived and older than 1 day
+	 * @param rootFile
+	 */
+	private void deleteFilesUnReceived(File rootFile){
+		Arrays.stream(rootFile.listFiles()).forEach(file -> {
+			if(file!=null && file.isDirectory())
+				Arrays.stream(file.listFiles()).filter(file1 -> file1.isFile() && new Date(file1.lastModified()+TimeUnit.DAYS.toMillis(1)).before(new Date()))
+						.collect(Collectors.toList()).forEach(file2 ->log.info("Deleting file - "+file2.getAbsolutePath()+" , delete status-"+file2.delete()));
 		});
 	}
 }
