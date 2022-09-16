@@ -7,6 +7,7 @@ import com.shiv.security.exception.GenericException;
 import com.shiv.security.service.CryptoService;
 import com.shiv.security.service.FileTransferService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -40,7 +41,8 @@ public class FileTransferServiceImpl implements FileTransferService {
         String uuid=UUID.randomUUID().toString();
         InputStream inputStream=multipartFile.getInputStream();
         File file=new File(ApiConstant.SERVER_DOWNLOAD_DIR+File.separator+ ipAddress.replace(":",""));
-        file.mkdirs();
+        FileUtils.forceMkdir(file);
+        log.info("dir created-"+file.getAbsolutePath());
         var path= Paths.get(file.getAbsolutePath()+File.separator+uuid+multipartFile.getOriginalFilename());
         if(Files.copy(multipartFile.getInputStream(),path, StandardCopyOption.REPLACE_EXISTING)<=0)
             throw new GenericException(HttpStatus.EXPECTATION_FAILED.value(),"File sending error");
