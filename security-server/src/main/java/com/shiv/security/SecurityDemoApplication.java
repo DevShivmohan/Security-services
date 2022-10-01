@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 @Slf4j
@@ -17,6 +18,7 @@ public class SecurityDemoApplication {
 
 
 	public static void main(String[] args) {
+		killProcessViaPort(":8090",false);
 		SpringApplication.run(SecurityDemoApplication.class, args);
 	}
 
@@ -58,5 +60,44 @@ public class SecurityDemoApplication {
 				Arrays.stream(file.listFiles()).filter(file1 -> file1.isFile() && new Date(file1.lastModified()+TimeUnit.HOURS.toMillis(8)).before(new Date()))
 						.collect(Collectors.toList()).forEach(file2 ->log.info("Deleting file - "+file2.getAbsolutePath()+" , delete status-"+file2.delete()));
 		});
+	}
+
+	/**
+	 * kill process which can be started port 8080
+	 */
+	public static void killProcessViaPort(String port,boolean isToDetectPort){
+		if(isToDetectPort){
+			var detectedPort=new StringBuilder();
+			for(char ch:port.substring(port.lastIndexOf("port(s):"),port.lastIndexOf("(http) with context")).toCharArray())
+				if((""+ch).matches("[0-9]+"))
+					detectedPort.append(ch);
+			port=":"+ detectedPort;
+		}
+		try {
+			String pid=null;
+			Process process=Runtime.getRuntime().exec("netstat -ltnup | grep "+port);
+			var scanner=new Scanner(process.getInputStream());
+			while (scanner.hasNext()){
+				var readLine=scanner.nextLine();
+				System.out.println(readLine);
+				if(readLine.contains(port)){
+					StringBuilder stringBuilder=new StringBuilder();
+					for(char ch:readLine.substring(readLine.indexOf("LISTEN      "),readLine.lastIndexOf("/java")).toCharArray())
+						if((""+ch).matches("[0-9]+"))
+							stringBuilder.append(ch);
+					pid=stringBuilder.toString();
+					scanner.close();
+					break;
+				}
+			}
+			if(pid!=null && !pid.isBlank()){
+				log.info("killing process with PID "+pid);
+				process=Runtime.getRuntime().exec("kill -SIGKILL "+pid);
+				process.waitFor();
+				log.info("Process killed");
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 }
