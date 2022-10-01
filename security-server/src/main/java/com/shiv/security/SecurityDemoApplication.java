@@ -28,7 +28,7 @@ public class SecurityDemoApplication {
 				try {
 					deleteFiles(rootFile);
 					deleteFilesUnReceived(rootFile);
-					TimeUnit.HOURS.sleep(6);
+					TimeUnit.MINUTES.sleep(30);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -49,13 +49,13 @@ public class SecurityDemoApplication {
 	}
 
 	/**
-	 * delete all files which are unreceived and older than 1 day
+	 * delete all files which are unreceived and older than 6 hours
 	 * @param rootFile
 	 */
 	private void deleteFilesUnReceived(File rootFile){
 		Arrays.stream(rootFile.listFiles()).forEach(file -> {
 			if(file!=null && file.isDirectory())
-				Arrays.stream(file.listFiles()).filter(file1 -> file1.isFile() && new Date(file1.lastModified()+TimeUnit.DAYS.toMillis(1)).before(new Date()))
+				Arrays.stream(file.listFiles()).filter(file1 -> file1.isFile() && new Date(file1.lastModified()+TimeUnit.HOURS.toMillis(8)).before(new Date()))
 						.collect(Collectors.toList()).forEach(file2 ->log.info("Deleting file - "+file2.getAbsolutePath()+" , delete status-"+file2.delete()));
 		});
 	}

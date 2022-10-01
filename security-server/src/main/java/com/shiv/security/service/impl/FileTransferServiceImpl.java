@@ -57,8 +57,8 @@ public class FileTransferServiceImpl implements FileTransferService {
         if(fileMap.get(cryptoSecretKeyDTO.getSecretKey())==null)
             throw new GenericException(HttpStatus.NOT_FOUND.value(), "Incorrect given key");
         var file= fileMap.get(cryptoSecretKeyDTO.getSecretKey());
-        if(!file.renameTo(new File(file.getAbsolutePath().replace(cryptoSecretKeyDTO.getSecretKey(),""))))
-            throw new GenericException(HttpStatus.EXPECTATION_FAILED.value(), "Failed to retrieved try again");
+//        if(!file.renameTo(new File(file.getAbsolutePath().replace(cryptoSecretKeyDTO.getSecretKey(),""))))
+//            throw new GenericException(HttpStatus.EXPECTATION_FAILED.value(), "Failed to retrieved try again");
         fileMap.put(cryptoSecretKeyDTO.getSecretKey(), new File(file.getAbsolutePath().replace(cryptoSecretKeyDTO.getSecretKey(),"")));
         var resource= new UrlResource(fileMap.get(cryptoSecretKeyDTO.getSecretKey()).toURI());
         if(!(resource.exists() && resource.isReadable()))
