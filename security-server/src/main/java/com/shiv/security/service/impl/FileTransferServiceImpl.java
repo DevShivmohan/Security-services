@@ -57,13 +57,13 @@ public class FileTransferServiceImpl implements FileTransferService {
         if(fileMap.get(cryptoSecretKeyDTO.getSecretKey())==null)
             throw new GenericException(HttpStatus.NOT_FOUND.value(), "Incorrect given key");
         var file= fileMap.get(cryptoSecretKeyDTO.getSecretKey());
-//        if(!file.renameTo(new File(file.getAbsolutePath().replace(cryptoSecretKeyDTO.getSecretKey(),""))))
-//            throw new GenericException(HttpStatus.EXPECTATION_FAILED.value(), "Failed to retrieved try again");
+        if(!file.renameTo(new File(file.getAbsolutePath().replace(cryptoSecretKeyDTO.getSecretKey(),""))))
+            throw new GenericException(HttpStatus.EXPECTATION_FAILED.value(), "Failed to retrieved try again");
         fileMap.put(cryptoSecretKeyDTO.getSecretKey(), new File(file.getAbsolutePath().replace(cryptoSecretKeyDTO.getSecretKey(),"")));
         var resource= new UrlResource(fileMap.get(cryptoSecretKeyDTO.getSecretKey()).toURI());
         log.info("Resource exist status-"+resource.exists());
         log.info("Resource readable status-"+resource.isReadable());
-        if(!(resource.exists()))
+        if(!(resource.exists() && resource.isReadable()))
             throw new GenericException(HttpStatus.NOT_FOUND.value(), "File does not exists");
         HttpHeaders httpHeaders=new HttpHeaders();
         httpHeaders.add("status","File is ready to download you can able to download");
