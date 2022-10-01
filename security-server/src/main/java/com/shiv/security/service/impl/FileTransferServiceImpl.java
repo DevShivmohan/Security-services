@@ -41,7 +41,6 @@ public class FileTransferServiceImpl implements FileTransferService {
     @Override
     public ResponseEntity<?> sendFile(MultipartFile multipartFile,final String ipAddress) throws GenericException, IOException {
         String uuid=UUID.randomUUID().toString();
-        InputStream inputStream=multipartFile.getInputStream();
         File file=new File(ApiConstant.SERVER_DOWNLOAD_DIR+File.separator+ ipAddress.replace(":",""));
         FileUtils.forceMkdir(file);
         log.info("dir created-"+file.getAbsolutePath());
@@ -62,7 +61,9 @@ public class FileTransferServiceImpl implements FileTransferService {
 //            throw new GenericException(HttpStatus.EXPECTATION_FAILED.value(), "Failed to retrieved try again");
         fileMap.put(cryptoSecretKeyDTO.getSecretKey(), new File(file.getAbsolutePath().replace(cryptoSecretKeyDTO.getSecretKey(),"")));
         var resource= new UrlResource(fileMap.get(cryptoSecretKeyDTO.getSecretKey()).toURI());
-        if(!(resource.exists() && resource.isReadable()))
+        log.info("Resource exist status-"+resource.exists());
+        log.info("Resource readable status-"+resource.isReadable());
+        if(!(resource.exists()))
             throw new GenericException(HttpStatus.NOT_FOUND.value(), "File does not exists");
         HttpHeaders httpHeaders=new HttpHeaders();
         httpHeaders.add("status","File is ready to download you can able to download");

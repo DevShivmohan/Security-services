@@ -16,18 +16,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(GenericException.class)
     public ResponseEntity<?> handlerGenericException(GenericException genericException){
         log.error(genericException.getMessage());
+        genericException.printStackTrace();
         return ResponseEntity.status(genericException.getStatusCode()).body(genericException.getErrorMessage());
     }
 
     @ExceptionHandler(IOException.class)
     public ResponseEntity<?> handlerIOException(IOException ioException){
         log.error(ioException.getMessage());
+        ioException.printStackTrace();
         return ResponseEntity.status(HttpStatus.INSUFFICIENT_STORAGE).body(ioException.getMessage());
     }
 
     @ExceptionHandler(FileNotFoundException.class)
     public ResponseEntity<?> handlerIOException(FileNotFoundException fileNotFoundException){
         log.error(fileNotFoundException.getMessage());
+        fileNotFoundException.printStackTrace();
         return ResponseEntity.status(HttpStatus.INSUFFICIENT_STORAGE).body(fileNotFoundException.getMessage());
     }
 }
