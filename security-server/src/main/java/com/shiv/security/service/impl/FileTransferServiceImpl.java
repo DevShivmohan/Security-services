@@ -53,6 +53,7 @@ public class FileTransferServiceImpl implements FileTransferService {
 
     @Override
     public ResponseEntity<?> receiveFile(CryptoSecretKeyDTO cryptoSecretKeyDTO) throws GenericException, IOException {
+        log.info("Receive secretKey-"+cryptoSecretKeyDTO);
         searchFileViaSecretKey(new File(ApiConstant.SERVER_DOWNLOAD_DIR),cryptoSecretKeyDTO);
         if(fileMap.get(cryptoSecretKeyDTO.getSecretKey())==null)
             throw new GenericException(HttpStatus.NOT_FOUND.value(), "Incorrect given key");
