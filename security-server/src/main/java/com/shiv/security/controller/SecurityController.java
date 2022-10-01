@@ -59,10 +59,10 @@ public class SecurityController {
     }
 
     @CheckIfValidKey
-    @PostMapping(value = "/receive/file/data")
-    public ResponseEntity<?> receiveFileData(@RequestBody CryptoSecretKeyDTO cryptoSecretKeyDTO) throws GenericException, IOException {
+    @GetMapping(value = "/receive/file/data")
+    public ResponseEntity<?> receiveFileData(@RequestParam("secretKey") String secretKey) throws GenericException, IOException {
         log.info("/receive/file/data api hits");
-        return fileTransferService.receiveFile(cryptoSecretKeyDTO);
+        return fileTransferService.receiveFile(new CryptoSecretKeyDTO(secretKey));
     }
 
 //    @GetMapping(value = "/sent/files")

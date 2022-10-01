@@ -2,6 +2,7 @@ package com.shiv.security.service.impl;
 
 import com.shiv.security.constant.ApiConstant;
 import com.shiv.security.dto.CryptoSecretKeyDTO;
+import com.shiv.security.dto.SendFileResponseDTO;
 import com.shiv.security.dto.SentDataDTO;
 import com.shiv.security.exception.GenericException;
 import com.shiv.security.service.CryptoService;
@@ -9,6 +10,7 @@ import com.shiv.security.service.FileTransferService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Inet4Address;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -30,6 +35,9 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class FileTransferServiceImpl implements FileTransferService {
+
+    @Autowired
+    private Environment environment;
 
     private Map<String,File> fileMap=new HashMap<>();
 
@@ -46,7 +54,11 @@ public class FileTransferServiceImpl implements FileTransferService {
         var path= Paths.get(file.getAbsolutePath()+File.separator+uuid+multipartFile.getOriginalFilename());
         if(Files.copy(multipartFile.getInputStream(),path, StandardCopyOption.REPLACE_EXISTING)<=0)
             throw new GenericException(HttpStatus.EXPECTATION_FAILED.value(),"File sending error");
-        return ResponseEntity.status(HttpStatus.OK).body(new CryptoSecretKeyDTO(uuid));
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(SendFileResponseDTO.builder().url(new URL("http://"+Inet4Address.getLocalHost().getHostAddress()+":"+environment.getProperty("local.server.port")+"/trf/security/receive/file/data?secretKey="+uuid)).secretKey(uuid).build());
+        }catch (UnknownHostException e){
+            return ResponseEntity.status(HttpStatus.OK).body(new CryptoSecretKeyDTO(uuid));
+        }
     }
 
     @Override

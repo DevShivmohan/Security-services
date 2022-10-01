@@ -23,15 +23,15 @@ public class CheckIfValidKeyAspect {
         Integer headerPosition=null;
         AtomicInteger atomicInteger=new AtomicInteger(0);
         for(String name:codeSignature.getParameterNames())
-            if(name.equalsIgnoreCase("cryptoSecretKeyDTO"))
+            if(name.equalsIgnoreCase("secretKey"))
                 headerPosition=atomicInteger.get();
             else
                 atomicInteger.incrementAndGet();
-        CryptoSecretKeyDTO cryptoSecretKeyDTO= (CryptoSecretKeyDTO) joinPoint.getArgs()[headerPosition];
-        log.info(cryptoSecretKeyDTO.toString());
-        if(cryptoSecretKeyDTO.getSecretKey()==null || cryptoSecretKeyDTO.getSecretKey().isBlank())
+        String secretKey= (String) joinPoint.getArgs()[headerPosition];
+        log.info(secretKey);
+        if(secretKey==null || secretKey.isBlank())
             throw new GenericException(HttpStatus.BAD_REQUEST.value(), "Secret key cannot be null or blank");
-        if(cryptoSecretKeyDTO.getSecretKey().length()!=36)
+        if(secretKey.length()!=36)
             throw new GenericException(HttpStatus.BAD_REQUEST.value(),"Invalid secret key");
     }
 }
