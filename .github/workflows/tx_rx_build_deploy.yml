@@ -1,1 +1,47 @@
 
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Java deployment
+
+on:
+  push:
+    branches: [ dev ]
+
+jobs:
+          
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy and run the JAR file on the remote server
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17.0.4
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17.0.4
+      - name: Grant execute permission for gradlew
+        working-directory: ./security-server/
+        run: chmod +x maven
+      - name: Build with Maven
+        working-directory: ./security-server/
+        run: ./mvn clean install
+      
+      - name: copy file via ssh key
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: "./security-server/target/security-demo-0.0.1-SNAPSHOT.jar"
+          remote: "/home/shiv-projects/transfer-service/Security-services/security-server/security-demo-0.0.1-SNAPSHOT.jar"
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+
+      - name: Run a script on remote server (start the application)
+        if: always()
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd /home/shiv-projects/transfer-service/Security-services/security-server && java -jar security-demo-0.0.1-SNAPSHOT.jar -xms200M -xmx768M &
+          host: ${{ secrets.HOST }}
+          user: ${{ secrets.USERNAME }}
+          pass: ${{ secrets.PASSWORD }}
+          args: "-tt"
