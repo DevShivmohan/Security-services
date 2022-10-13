@@ -19,9 +19,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17.0.4
-      - name: Grant execute permission for gradlew
-        working-directory: ./security-server/
-        run: chmod +x maven
       - name: Build with Maven
         working-directory: ./security-server/
         run: ./mvn clean install
