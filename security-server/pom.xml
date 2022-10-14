@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.shiv.security</groupId>
-	<artifactId>security-demo</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>security-demo</name>
+	<artifactId>Transfer-files</artifactId>
+	<version>1.0</version>
+	<name>Transfer and receive files</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
