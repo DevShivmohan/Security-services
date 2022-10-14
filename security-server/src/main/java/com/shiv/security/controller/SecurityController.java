@@ -65,7 +65,7 @@ public class SecurityController {
         return fileTransferService.receiveFile(new CryptoSecretKeyDTO(secretKey));
     }
 
-//    @GetMapping(value = "/sent/files")
+    @GetMapping(value = "/sent/files")
     public ResponseEntity<?> receiveFileData(HttpServletRequest httpServletRequest) throws GenericException, IOException {
         log.info("/sent/files api hits");
         return fileTransferService.getSentFileKeys(httpServletRequest.getRemoteAddr());
