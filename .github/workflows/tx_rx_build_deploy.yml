@@ -21,13 +21,13 @@ jobs:
           java-version: 17.0.4
       - name: Build with Maven
         working-directory: ./security-server/
-        run: ./mvn clean install
+        run: mvn -B package --file pom.xml
       
       - name: copy file via ssh key
         uses: garygrossgarten/github-action-scp@release
         with:
-          local: "./security-server/target/security-demo-0.0.1-SNAPSHOT.jar"
-          remote: "/home/shiv-projects/transfer-service/Security-services/security-server/security-demo-0.0.1-SNAPSHOT.jar"
+          local: "./security-server/target/Transfer-files-1.0.jar"
+          remote: "/home/shiv-projects/transfer-service/Security-services/security-server/Transfer-files-1.0.jar"
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
@@ -37,7 +37,7 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            cd /home/shiv-projects/transfer-service/Security-services/security-server && java -jar security-demo-0.0.1-SNAPSHOT.jar -xms200M -xmx768M &
+            cd /home/shiv-projects/transfer-service/Security-services/security-server && java -jar Transfer-files-1.0.jar -xms200M -xmx768M &
           host: ${{ secrets.HOST }}
           user: ${{ secrets.USERNAME }}
           pass: ${{ secrets.PASSWORD }}
