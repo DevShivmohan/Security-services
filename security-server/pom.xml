@@ -76,6 +76,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>tx-rx-server</finalName>
 	</build>
 
 </project>
