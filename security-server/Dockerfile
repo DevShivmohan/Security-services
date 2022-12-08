@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 FROM openjdk:17
-VOLUME /tmp
+WORKDIR /usr/src/tx-rx-server
+COPY /target/tx-rx-server.jar /usr/src/tx-rx-server/
 EXPOSE 8090
-ADD target/tx-rx-server.jar tx-rx-server.jar
-ENTRYPOINT ["java","-jar","/tx-rx-server.jar"]
+ENTRYPOINT ["java","-jar","tx-rx-server.jar"]
