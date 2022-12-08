@@ -28,8 +28,8 @@ jobs:
       - name: copy file via ssh key
         uses: garygrossgarten/github-action-scp@release
         with:
-          local: "./security-server/target/Transfer-files-1.0.jar"
-          remote: "/home/shiv-projects/transfer-service/Security-services/security-server/Transfer-files-1.0.jar"
+          local: "./security-server/target/tx-rx-server.jar"
+          remote: "/home/shiv-projects/transfer-service/Security-services/security-server/tx-rx-server.jar"
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
@@ -39,7 +39,7 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            cd /home/shiv-projects/transfer-service/Security-services/security-server && java -jar Transfer-files-1.0.jar -xms200M -xmx768M &
+            cd /home/shiv-projects/transfer-service/Security-services/security-server && java -jar tx-rx-server.jar -xms200M -xmx768M &
           host: ${{ secrets.HOST }}
           user: ${{ secrets.USERNAME }}
           pass: ${{ secrets.PASSWORD }}
