@@ -20,9 +20,9 @@ public class SecurityDemoApplication {
 	public static void main(String[] args) {
 		killProcessViaPort(":8090",false);
 		SpringApplication.run(SecurityDemoApplication.class, args);
+		new SecurityDemoApplication().deleteAutoUploadedFiles();
 	}
 
-	@PostConstruct
 	private void deleteAutoUploadedFiles(){
 		var rootFile=new File(ApiConstant.SERVER_DOWNLOAD_DIR);
 		new Thread(()->{
