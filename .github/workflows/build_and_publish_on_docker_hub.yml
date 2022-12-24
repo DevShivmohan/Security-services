@@ -24,7 +24,7 @@ jobs:
        tags: latest
     
     - name: Executing commands on remote server
-      uses: ExceptionGenerator/github-action-ssh@release
+      uses: garygrossgarten/github-action-ssh@release
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
