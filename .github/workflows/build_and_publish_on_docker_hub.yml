@@ -3,8 +3,6 @@ name: Build and Publish Docker Image
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 jobs:
   build:
@@ -14,13 +12,13 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v1
       with:
-        java-version: 1.11
+        java-version: 17
     - name: Build with Maven
-      run: mvn clean install
+      run: mvn clean compile install
     - name: Publish to Docker Hub
       uses: docker/build-push-action@v1
       with:
-       username: ${{ secrets.DOCKER_HUB_USERNAME }}
-       password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-       repository: dockerHubUser/dockerHubRepository
-       tags: ${{github.run_number}}
+       username: ${{ secrets.DOCKER_USERNAME }}
+       password: ${{ secrets.DOCKER_PASSWORD }}
+       repository: exceptiongenerator/send-anywhere-microservice
+       tags: latest
