@@ -35,7 +35,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          script: |
+          command: |
             cd /home/shiv-projects/transfer-service &&
             docker stop send-app &&
             docker rm -f send-app &&
