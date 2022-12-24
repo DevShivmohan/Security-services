@@ -1,44 +1,23 @@
-
-# This workflow will build a Java project with Gradle
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
-
-name: Java deployment
-
-on:
-  push:
-    branches: [ "dev1" ]
-
+name: Execute running command on cloude server
+on: 
+  push: 
+    branches: [dev]
 jobs:
-          
-  deploy:
+  build:
+    name: Deploye
     runs-on: ubuntu-latest
-    name: Deploy and run the JAR file on the remote server
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 17.0.4
-        uses: actions/setup-java@v1
-        with:
-          java-version: 17.0.4
-      - name: Build with Maven
-        working-directory: ./security-server/
-        run: mvn -B package --file pom.xml
-      
-      - name: copy file via ssh key
-        uses: garygrossgarten/github-action-scp@release
-        with:
-          local: "./security-server/target/tx-rx-server.jar"
-          remote: "/home/shiv-projects/transfer-service/Security-services/security-server/tx-rx-server.jar"
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-
-      - name: Run a script on remote server (start the application)
-        if: always()
-        uses: fifsky/ssh-action@master
-        with:
-          command: |
-            cd /home/shiv-projects/transfer-service/Security-services/security-server && java -jar tx-rx-server.jar -xms200M -xmx768M &
-          host: ${{ secrets.HOST }}
-          user: ${{ secrets.USERNAME }}
-          pass: ${{ secrets.PASSWORD }}
-          args: "-tt"
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: 22
+        command: |
+            cd /home/shiv-projects/transfer-service &&
+            docker stop send-app &&
+            docker rm -f send-app &&
+            docker pull exceptiongenerator/send-anywhere-microservice &&
+            docker run --name send-app -v /home/shiv-projects/transfer-service:/home/shiv-projects/transfer-service -it -p 8090:8090 -d exceptiongenerator/send-anywhere-microservice &&
+            docker logs send-app &
