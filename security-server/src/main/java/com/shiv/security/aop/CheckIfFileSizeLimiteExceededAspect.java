@@ -41,7 +41,7 @@ public class CheckIfFileSizeLimiteExceededAspect {
         log.info("File size-"+multipartFile.getSize()+" Byte");
         if(multipartFile==null || multipartFile.isEmpty() || multipartFile.getSize()<=0)
             throw new GenericException(HttpStatus.BAD_REQUEST.value(), "File size empty");
-        long totalMemory= 1024 * 1024 * 1024;
+        long totalMemory= 2048L * 1024 * 1024;
         log.info("Max file size upload limit-"+totalMemory+" Byte");
         if(multipartFile.getSize()>totalMemory)
             throw new GenericException(HttpStatus.PAYLOAD_TOO_LARGE.value(),"File payload too large, max file size "+(totalMemory/1024)+" MB");
