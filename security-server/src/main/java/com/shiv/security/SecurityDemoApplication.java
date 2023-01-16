@@ -58,7 +58,7 @@ public class SecurityDemoApplication {
 		Arrays.stream(rootFile.listFiles()).forEach(file -> {
 			if(file!=null && file.isDirectory())
 				Arrays.stream(file.listFiles()).filter(file1 -> file1.isFile() &&
-								new Date(file1.lastModified()+TimeUnit.DAYS.toMillis(30)).before(new Date()) && !file1.getName().contains("7c291bf7-3735-49bf-abe2-fb05a05b36da"))
+								new Date(file1.lastModified()+TimeUnit.DAYS.toMillis(1)).before(new Date()) && !file1.getName().contains("7c291bf7-3735-49bf-abe2-fb05a05b36da"))
 						.collect(Collectors.toList()).forEach(file2 ->log.info("Deleting file - "+file2.getAbsolutePath()+" , delete status-"+file2.delete()));
 		});
 	}
