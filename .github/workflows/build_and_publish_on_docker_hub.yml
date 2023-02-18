@@ -35,4 +35,4 @@ jobs:
             docker rm -f send-app &&
             docker pull exceptiongenerator/send-anywhere-microservice &&
             docker run --name send-app -v /home/shiv-projects/transfer-service:/home/shiv-projects/transfer-service -it -p 8090:8090 -d exceptiongenerator/send-anywhere-microservice &&
-            docker logs send-app
+            history -c
