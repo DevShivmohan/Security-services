@@ -18,7 +18,7 @@ public class SecurityDemoApplication {
 
 
 	public static void main(String[] args) {
-		killProcessViaPort(":8090",false);
+		killProcessViaPort(":8091",false);
 		SpringApplication.run(SecurityDemoApplication.class, args);
 		new SecurityDemoApplication().deleteAutoUploadedFiles();
 	}
