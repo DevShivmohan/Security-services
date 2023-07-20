@@ -20,7 +20,7 @@ jobs:
       with:
        username: ${{ secrets.DOCKER_USERNAME }}
        password: ${{ secrets.DOCKER_PASSWORD }}
-       repository: exceptiongenerator/send-anywhere-microservice
+       repository: devshivmohan/send-anywhere-microservice
        tags: latest
     
     - name: Executing commands on remote server
@@ -33,6 +33,6 @@ jobs:
             cd /home/shiv-projects/transfer-service &&
             docker stop send-app &&
             docker rm -f send-app &&
-            docker pull exceptiongenerator/send-anywhere-microservice &&
-            docker run --name send-app -v /home/shiv-projects/transfer-service:/home/shiv-projects/transfer-service -it -p 8091:8091 -d exceptiongenerator/send-anywhere-microservice &&
+            docker pull devshivmohan/send-anywhere-microservice &&
+            docker run --name send-app -v /home/shiv-projects/transfer-service:/home/shiv-projects/transfer-service -it -p 8091:8091 -d devshivmohan/send-anywhere-microservice &&
             history -c
