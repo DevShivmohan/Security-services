@@ -42,7 +42,7 @@ public class SwaggerConfig {
         return new ApiInfoBuilder()
                 .title("Transfer and receive files and data security")
                 .description("Encryption/decryption of data and transfer and receive files")
-                .version("2.0.0")
+                .version("2.0.1")
                 .build();
     }
 
