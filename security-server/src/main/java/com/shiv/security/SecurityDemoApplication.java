@@ -2,25 +2,27 @@ package com.shiv.security;
 
 import com.shiv.security.constant.ApiConstant;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 @Slf4j
 @SpringBootApplication
 public class SecurityDemoApplication {
+	@Autowired
+	private List<String> secretKeys;
 
 
 	public static void main(String[] args) {
+//		System.out.println(String.format(, System.currentTimeMillis()));
 	//	killProcessViaPort(":8091",false);
 		SpringApplication.run(SecurityDemoApplication.class, args);
-		new SecurityDemoApplication().deleteAutoUploadedFiles();
+//		new SecurityDemoApplication().deleteAutoUploadedFiles();
 	}
 
 	private void deleteAutoUploadedFiles(){
@@ -28,7 +30,7 @@ public class SecurityDemoApplication {
 		new Thread(()->{
 			while (true){
 				try {
-					deleteFiles(rootFile);
+//					deleteFiles(rootFile);
 					deleteFilesUnReceived(rootFile);
 					TimeUnit.MINUTES.sleep(30);
 				} catch (Exception e) {
@@ -43,10 +45,10 @@ public class SecurityDemoApplication {
 	 * @param rootFile
 	 */
 	private void deleteFiles(File rootFile){
-		Arrays.stream(rootFile.listFiles()).forEach(file -> {
+		Arrays.stream(Objects.requireNonNull(rootFile.listFiles())).forEach(file -> {
 			if(file!=null && file.isDirectory())
-				Arrays.stream(file.listFiles()).filter(file1 -> file1.isFile() && file1.getName().length()<=36)
-						.collect(Collectors.toList()).forEach(file2 -> file2.delete());
+				Arrays.stream(Objects.requireNonNull(file.listFiles())).filter(file1 -> file1.isFile() && file1.getName().length()<=36)
+						.toList().forEach(File::delete);
 		});
 	}
 
@@ -55,11 +57,11 @@ public class SecurityDemoApplication {
 	 * @param rootFile
 	 */
 	private void deleteFilesUnReceived(File rootFile){
-		Arrays.stream(rootFile.listFiles()).forEach(file -> {
+		Arrays.stream(Objects.requireNonNull(rootFile.listFiles())).forEach(file -> {
 			if(file!=null && file.isDirectory())
-				Arrays.stream(file.listFiles()).filter(file1 -> file1.isFile() &&
-								new Date(file1.lastModified()+TimeUnit.DAYS.toMillis(1)).before(new Date()) && !file1.getName().contains("7c291bf7-3735-49bf-abe2-fb05a05b36da"))
-						.collect(Collectors.toList()).forEach(file2 ->log.info("Deleting file - "+file2.getAbsolutePath()+" , delete status-"+file2.delete()));
+				Arrays.stream(Objects.requireNonNull(file.listFiles())).filter(file1 -> file1.isFile() &&
+								new Date(file1.lastModified()+TimeUnit.DAYS.toMillis(1)).before(new Date()))
+						.toList().forEach(file2 ->log.info("Deleting file - "+file2.getAbsolutePath()+" , delete status-"+file2.delete()));
 		});
 	}
 

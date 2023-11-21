@@ -1,7 +1,5 @@
 package com.shiv.security.controller;
 
-import com.shiv.security.annotation.CheckIfFileSizeExceeded;
-import com.shiv.security.annotation.CheckIfValidKey;
 import com.shiv.security.dto.CryptoRequestDTO;
 import com.shiv.security.dto.CryptoSecretKeyDTO;
 import com.shiv.security.exception.GenericException;
@@ -9,12 +7,14 @@ import com.shiv.security.service.FileTransferService;
 import com.shiv.security.service.SecureService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RestController
@@ -51,18 +51,21 @@ public class SecurityController {
         return secureService.decryptFileData(cryptoSecretKeyDTO.getSecretKey(),multipartFile);
     }
 
-    @CheckIfFileSizeExceeded
-    @PostMapping(value = "/send/file/data",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @CheckIfFileSizeExceeded
+    @PostMapping(value = "/send",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> sendFileData(@RequestPart(value = "file") MultipartFile multipartFile, HttpServletRequest httpServletRequest) throws GenericException, IOException {
-        log.info("/send/file/data api hits");
+        log.info("/send api hits");
         return fileTransferService.sendFile(multipartFile,httpServletRequest.getRemoteAddr());
     }
 
-    @CheckIfValidKey
-    @GetMapping(value = "/receive/file/data")
-    public ResponseEntity<?> receiveFileData(@RequestParam("secretKey") String secretKey) throws GenericException, IOException {
-        log.info("/receive/file/data api hits");
-        return fileTransferService.receiveFile(new CryptoSecretKeyDTO(secretKey));
+//    @CheckIfValidKey
+    @GetMapping(value = "/receive")
+    public ResponseEntity<?> receiveFileData(@RequestParam("secretKey") String secretKey, HttpServletResponse httpServletResponse) throws GenericException, IOException {
+        log.info("/receive api hits");
+        if(secretKey==null)
+            throw new GenericException(HttpStatus.BAD_REQUEST.value(), "Secret key cannot be null");
+        fileTransferService.receiveFile(new CryptoSecretKeyDTO(secretKey),httpServletResponse);
+        return ResponseEntity.ok().build();
     }
 
 //    @GetMapping(value = "/sent/files")
