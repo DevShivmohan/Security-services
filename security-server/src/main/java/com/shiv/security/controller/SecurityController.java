@@ -62,8 +62,8 @@ public class SecurityController {
     @GetMapping(value = "/receive")
     public ResponseEntity<?> receiveFileData(@RequestParam("secretKey") String secretKey, HttpServletResponse httpServletResponse) throws GenericException, IOException {
         log.info("/receive api hits");
-        if(secretKey==null)
-            throw new GenericException(HttpStatus.BAD_REQUEST.value(), "Secret key cannot be null");
+        if(secretKey==null || secretKey.length()!=6)
+            throw new GenericException(HttpStatus.BAD_REQUEST.value(), "Invalid Secret key");
         fileTransferService.receiveFile(new CryptoSecretKeyDTO(secretKey),httpServletResponse);
         return ResponseEntity.ok().build();
     }
