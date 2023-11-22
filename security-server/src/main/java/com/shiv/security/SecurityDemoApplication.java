@@ -19,13 +19,12 @@ public class SecurityDemoApplication {
 
 
 	public static void main(String[] args) {
-//		System.out.println(String.format(, System.currentTimeMillis()));
 	//	killProcessViaPort(":8091",false);
 		SpringApplication.run(SecurityDemoApplication.class, args);
-//		new SecurityDemoApplication().deleteAutoUploadedFiles();
 	}
 
-	private void deleteAutoUploadedFiles(){
+	@PostConstruct
+	public void deleteAutoUploadedFiles(){
 		var rootFile=new File(ApiConstant.SERVER_DOWNLOAD_DIR);
 		new Thread(()->{
 			while (true){
@@ -61,7 +60,10 @@ public class SecurityDemoApplication {
 			if(file!=null && file.isDirectory())
 				Arrays.stream(Objects.requireNonNull(file.listFiles())).filter(file1 -> file1.isFile() &&
 								new Date(file1.lastModified()+TimeUnit.DAYS.toMillis(1)).before(new Date()))
-						.toList().forEach(file2 ->log.info("Deleting file - "+file2.getAbsolutePath()+" , delete status-"+file2.delete()));
+						.toList().forEach(file2 ->{
+							secretKeys.remove(file2.getName().substring(0,6));
+							log.info("Deleting file - "+file2.getAbsolutePath()+" , delete status-"+file2.delete());
+						});
 		});
 	}
 

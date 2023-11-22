@@ -27,25 +27,25 @@ public class SecurityController {
     @Autowired
     private FileTransferService fileTransferService;
 
-    @PostMapping("/encrypt/raw/data")
+//    @PostMapping("/encrypt/raw/data")
     public ResponseEntity<?> encryptRawData(@RequestBody CryptoRequestDTO cryptoRequestDTO) throws GenericException {
         log.info("/encrypt/raw/data api hits");
         return secureService.encryptRawData(cryptoRequestDTO);
     }
 
-    @PostMapping("/decrypt/raw/data")
+//    @PostMapping("/decrypt/raw/data")
     public ResponseEntity<?> decryptRawData(@RequestBody CryptoRequestDTO cryptoRequestDTO) throws GenericException {
         log.info("/decrypt/raw/data api hits");
         return secureService.decryptRawData(cryptoRequestDTO);
     }
 
-    @PostMapping(value = "/encrypt/file/data",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @PostMapping(value = "/encrypt/file/data",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> encryptFileData(CryptoSecretKeyDTO cryptoSecretKeyDTO, @RequestParam(value = "file") MultipartFile multipartFile) throws GenericException, IOException {
         log.info("/encrypt/file/data api hits");
         return secureService.encryptFileData(cryptoSecretKeyDTO.getSecretKey(),multipartFile);
     }
 
-    @PostMapping(value = "/decrypt/file/data",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @PostMapping(value = "/decrypt/file/data",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> decryptFileData(CryptoSecretKeyDTO cryptoSecretKeyDTO,@RequestPart(value = "file") MultipartFile multipartFile) throws GenericException, IOException {
         log.info("/decrypt/file/data api hits");
         return secureService.decryptFileData(cryptoSecretKeyDTO.getSecretKey(),multipartFile);
